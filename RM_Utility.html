@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--<meta http-equiv="refresh" content="300">-->
+    <title>Display service status</title>
+	<script src="http://code.jquery.com/jquery-3.6.1.js"></script>
+	<script type="text/javascript" src="url.js"></script>
+	<META HTTP-EQUIV="refresh" CONTENT="1550">
+    <!-- <script src=D:\Babloo\POC\HealthCheck\jquery-3.6.1.js></script> -->
+    <script>
+        var fso;
+        var fh;
+        var process = urls
+		var amqStatus;
+		var tdsStatus;
+		var out;		
+        function getData() {
+			tdsStatus();
+            //fso = new ActiveXObject("Scripting.FileSystemObject");
+            for (var i = 0; i < process.length; i++) {
+                var id = process[i].id.split('_');
+                var url = process[i].url;
+                call(id, url);
+            }
+
+        }
+		amqStatus=function filterResponse(resp){
+		//return "babloo";
+			for (var i = 0; i < resp.checks.length; i++) {
+                var id = resp.checks;
+                if(id!=null)
+				   if(id[i].data==null)
+				   return 'UP';
+				 else
+				     
+					 return 'DOWN';
+            }
+		}
+        function writeToFile(item, fh) {
+            var currentdate = new Date();
+            var datetime = "Time Stamp: " + currentdate.getDate() + "/" + (currentdate.getMonth() + 1) + "/" + currentdate.getFullYear() + " @ " + currentdate.getHours() + ":" + currentdate.getSeconds();
+            TextToWrite = item + datetime;
+            //fh.WriteLine(TextToWrite);
+            //fh.Close();
+        }
+		tdsStatus=function callTDS()
+		{
+		$.ajax({
+		url: "http://transaction-tracker-kris-dev.apps.lab.krisconnected.com/q/health",
+                //data: "message="+commentdata,
+                type: 'GET',
+                success: function (resp) {
+					out= resp.status;
+					console.log(resp.status);
+					console.log("out : "+out);
+				},
+				error: function (e) {
+					out= e;
+				}
+		});
+		//console.log("check"+out);
+		return out;
+		}
+        function call(id, url) {
+			
+            $.ajax({
+                url: url,
+                //data: "message="+commentdata,
+                type: 'GET',
+                success: function (resp) {
+                    if (id[0] == 'dit') {
+                        $('#dit table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="dit_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td id="dit_' + id[1] + '" style="text-align:center; color:green;">' + amqStatus(resp) + '</td><td id="dit_' + id[1] + '" style="text-align:center; color:green;">' + out + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        //alert(url);
+                        var text = "DIT Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'st') {
+                        $('#st table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "ST Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'sit1') {
+                        $('#sit1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "SIT1 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'nfr1') {
+                        $('#nfr1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "NFR1 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'sit2') {
+                        $('#sit2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "SIT2 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'nfr2') {
+                        $('#nfr2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "NFR2 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'PreProd1') {
+                        $('#PreProd1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "PreProd1 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'PreProd2') {
+                        $('#PreProd2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "PreProd2 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'uat') {
+                        $('#uat1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "SIT2 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'uat2') {
+                        $('#uat2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "NFR2 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'prod1') {
+                        $('#prod1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="prod1_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "PROD1 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'prod2') {
+                        $('#prod2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="prod2_' + id[1] + '" style="text-align:center; color:green;">' + resp.status + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "PROD2 Environment: " + id[1] + ": is " + resp.status + " at ";
+                        //writeToFile(text);
+                    }
+                },
+				
+                error: function (e) {
+                    if (id[0] == 'dit') {
+                        $('#dit table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="dit_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "DIT Environment: " + id[1] + " is DOWN " + " at ";
+                        //writeToFile(text);
+                        //alert(url);
+                    } else if (id[0] == 'st') {
+                        $('#st table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="st_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "DIT Environment: " + id[1] + ": is DOWN " + " at ";
+                        writeToFile(text);
+                    } else if (id[0] == 'sit1') {
+                        $('#sit1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="sit_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "DIT Environment: " + id[1] + ": is DOWN " + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'nfr1') {
+                        $('#nfr1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="nfr_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "DIT Environment: " + id[1] + ": is DOWN " + " at ";
+                        writeToFile(text);
+                    } else if (id[0] == 'sit2') {
+                        $('#sit2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="nfr_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "DIT Environment: " + id[1] + ": is DOWN " + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'nfr2') {
+                        $('#nfr2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="nfr_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "DIT Environment: " + id[1] + ": is DOWN " + " at ";
+                        //writeToFile(text);
+
+                    } else if (id[0] == 'PreProd1') {
+                        $('#PreProd1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="nfr_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "PreProd1 Environment: " + id[1] + ": is DOWN " + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'PreProd2') {
+                        $('#PreProd2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="nfr_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "PreProd2 Environment: " + id[1] + ": is DOWN " + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'uat') {
+                        $('#uat1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="nfr_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "UAT1 Environment: " + id[1] + ": is DOWN " + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'uat2') {
+                        $('#uat2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="nfr_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "UAT2 Environment: " + id[1] + ": is DOWN " + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'prod1') {
+                        $('#prod1 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="prod1_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "PROD1 Environment: " + id[1] + ": is DOWN " + " at ";
+                        //writeToFile(text);
+                    } else if (id[0] == 'prod2') {
+                        $('#prod2 table').append('<tr><td style="text-transform: capitalize;">' + id[1] + '</td><td>' + url + '</td><td id="prod2_' + id[1] + '" style="text-align:center; color:red;">' + 'DOWN' + '</td><td style="text-align:center;"><button onclick=checkStatus("' + id[0] + '","' + id[1] + '");>Current Status</button></td>');
+                        var text = "PROD2 Environment: " + id[1] + ": is DOWN " + " at ";
+                        //writeToFile(text);
+                    }
+                }
+				 
+            });
+			
+        }
+        function checkStatus(value1, value2) {
+            // alert(value1+"---"+value2);
+            var url = '';
+            for (var i = 0; i < process.length; i++) {
+                var idTemp = process[i].id.split('_');
+                // alert(idTemp[0]+"---"+idTemp[1]);
+                if (idTemp[0] == value1 && idTemp[1] == value2) {
+                    url = process[i].url;
+                }
+            }
+            var id = value1 + "_" + value2;
+            $("#" + id).html("LOADING...");
+            //alert(id);
+            $.ajax({
+                url: url,
+                //data: "message="+commentdata,
+                type: 'GET',
+                success: function (resp) {
+                    $("#" + id).html("UP");
+                    $("#" + id).css("color", "green");
+                },
+                error: function (e) {
+                    $("#" + id).html("DOWN");
+                    $("#" + id).css("color", "red");
+                }
+            });
+        }
+
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        #myTable {
+            width: 80%;
+            margin: auto;
+            margin-top: 30px;
+            border: 1px solid #000000;
+        }
+
+        #myTable table tr.head_row {
+            background: #006150;
+            color: #fff;
+            margin: 0px;
+        }
+
+        table tr td,
+        table tr th {
+            padding: 7px;
+        }
+
+        #myTable #dit {
+            margin-bottom: 20px;
+			
+        }
+
+        #myTable #st {
+            margin-top: 20px;
+            display: block;
+        }
+
+        #myTable #sit1 {
+            margin-top: 20px;
+            display: block;
+        }
+
+        #myTable #sit2 {
+            margin-top: 20px;
+            display: block;
+        }
+
+        #myTable #nfr1 {
+            margin-top: 20px;
+            display: block;
+        }
+
+        #myTable #PreProd1 {
+            margin-top: 20px;
+            display: block;
+        }
+
+        #myTable #PreProd2 {
+            margin-top: 20px;
+            display: block;
+        }
+
+        #myTable #uat {
+            margin-top: 20px;
+            display: block;
+        }
+
+        #myTable #uat2 {
+            margin-top: 20px;
+            display: block;
+        }
+
+        #myTable #prod1 {
+            margin-top: 20px;
+            display: block;
+        }
+
+        #myTable #prod2 {
+            margin-top: 20px;
+            display: block;
+        }
+
+        tr:nth-child(even) {
+            background: #CCC
+        }
+
+        tr:nth-child(odd) {
+            background: #FFF
+        }
+    </style>
+</head>
+
+<body onload="getData();">
+    <!--<h4 class="title">Please add "Allow-Control-Allow-Origin" extension to chrome and enable it before running this.
+    </h4> -->
+    <div id="myTable">
+        <div id="dit">
+            <table width="100%">
+                <tr class="head_row">
+                    <th width="20%">DIT ENVIRONMENT</th>
+                    <th width="30%">URL</th>
+                    <th width="10%">API STATUS</th>
+					<th width="10%">AMQ STATUS</th>
+					<th width="10%">TDS STATUS</th>
+                    <th width="20%">GET CURRENT STATUS</th>
+                </tr>
+            </table>
+        </div>
+		
+		<div id="st">
+            <table width="100%">
+                <tr class="head_row">
+                    <th width="20%">ST ENVIRONMENT</th>
+                    <th width="50%">URL</th>
+                    <th width="10%">STATUS</th>
+                    <th width="20%">GET CURRENT STATUS</th>
+                </tr>
+            </table>
+        </div>
+		
+		<div id="uat1">
+            <table width="100%">
+                <tr class="head_row">
+                    <th width="20%">UAT ENVIRONMENT(10.111.12.20)</th>
+                    <th width="50%">URL</th>
+                    <th width="10%">STATUS</th>
+                    <th width="20%">GET CURRENT STATUS</th>
+                </tr>
+            </table>
+        </div>
+		
+		<div id="nfr1">
+            <table width="100%">
+                <tr class="head_row">
+                    <th width="20%">NFR1 ENVIRONMENT(10.111.12.22)</th>
+                    <th width="50%">URL</th>
+                    <th width="10%">STATUS</th>
+                    <th width="20%">GET CURRENT STATUS</th>
+                </tr>
+            </table>
+        </div>
+		
+		 <div id="prod1">
+            <table width=" 100% ">
+                <tr class=" head_row ">
+                    <th width=" 20% ">PROD1 ENVIRONMENT(10.111.28.22:91XX)</th>
+                    <th width=" 50% ">URL</th>
+                    <th width=" 10% ">STATUS</th>
+                    <th width=" 20% ">GET CURRENT STATUS</th>
+                </tr>
+            </table>
+        </div>
+		
+    </div>
+</body>
+
+</html>
